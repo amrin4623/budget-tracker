@@ -15,9 +15,9 @@ jobs:
     environment: dev
     steps:
       - name: 'checkout from git'
-        uses: actions/checkout@V4
+        uses: actions/checkout@v2
       - name: Setup python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@V4
+        uses: actions/setup-python@v2
         with: 
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Resolving Dependencies
