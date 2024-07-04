@@ -1,0 +1,38 @@
+name: Budget Tracker
+
+on:
+  push:
+    branches: [main]
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'budgetapp2334'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
+  PYTHON_VERSION: '3.11' 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: 'checkout from git'
+        uses: actions/checkout@V4
+      - name: Setup python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@V4
+        with: 
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Resolving Dependencies
+        shell: bash
+        run : |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+      - name: Run to Azure
+        uses: Azure/functions-action@v1
+        id: fa
+        with: 
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
