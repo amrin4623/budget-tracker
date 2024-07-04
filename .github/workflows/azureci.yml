@@ -7,30 +7,32 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: 'budgetapp2334'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
-  PYTHON_VERSION: '3.11' 
+  PYTHON_VERSION: '3.11'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-      - name: 'checkout from git'
+      - name: 'Checkout from Git'
         uses: actions/checkout@v2
-      - name: Setup python ${{ env.PYTHON_VERSION }}
+
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v2
-        with: 
+        with:
           python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Resolving Dependencies
-        shell: bash
-        run : |
+        run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           python -m pip install --upgrade pip
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
           popd
-      - name: Run to Azure
+
+      - name: Deploy to Azure Function App
         uses: Azure/functions-action@v1
         id: fa
-        with: 
+        with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
